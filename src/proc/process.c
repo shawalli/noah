@@ -15,6 +15,7 @@
 #include "noah.h"
 #include "vmm.h"
 #include "mm.h"
+#include "capability.h"
 
 #include "linux/common.h"
 #include "linux/misc.h"
@@ -364,9 +365,31 @@ DEFINE_SYSCALL(tgkill)
   return -LINUX_ENOSYS;
 }
 
-DEFINE_SYSCALL(capget, gaddr_t, header_ptr, gaddr_t, data_ptr)
+DEFINE_SYSCALL(capget, cap_user_header_t, header_ptr, cap_user_data_t, data_ptr)
 {
-  printk("capget is unimplemented\n");
+  #define _LINUX_CAPABILITY_U32S_3 (2)
+  struct __user_cap_data_struct kdata[_LINUX_CAPABILITY_U32S_3];
+
+  warnk("capget is stubbed but not implemented\n");
+
+  // todo: validate header
+
+  if (data_ptr == NULL)
+    return 0;
+
+  // todo: guery user cap
+  // how dangerous is this? I guess not too bad, since it's just a getter and not a setter
+  memset(kdata, 1, sizeof(kdata));
+
+  copy_to_user((gaddr_t)data_ptr, kdata, sizeof(kdata));
+
+  return 0;
+}
+
+DEFINE_SYSCALL(capset, cap_user_header_t, header_ptr, const cap_user_data_t, data_ptr)
+{
+ warnk("capset is stubbed but not implemented\n");
+
   return 0;
 }
 

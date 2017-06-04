@@ -374,6 +374,22 @@ DEFINE_SYSCALL(capget, cap_user_header_t, header_ptr, cap_user_data_t, data_ptr)
 
   // todo: validate header
 
+  if (NULL == header_ptr)
+  {
+    warnk("capget::header_ptr == NULL\n");
+  }
+  else
+  {
+    warnk("capget::header_ptr == %p\n", header_ptr);
+    warnk("capget::pid:%d (%04x)\n", header_ptr->pid, header_ptr->pid);
+    warnk("capget::ver:%d\n", header_ptr->version);
+  }
+
+  //header_ptr->version = _LINUX_CAPABILITY_U32S_3;
+  if (NULL == data_ptr)
+  {
+      warnk("capget::data_ptr == NULL\n");
+  }
   if (data_ptr == NULL)
     return 0;
 
@@ -382,6 +398,7 @@ DEFINE_SYSCALL(capget, cap_user_header_t, header_ptr, cap_user_data_t, data_ptr)
   memset(kdata, 1, sizeof(kdata));
 
   copy_to_user((gaddr_t)data_ptr, kdata, sizeof(kdata));
+  header_ptr->version = _LINUX_CAPABILITY_U32S_3;
 
   return 0;
 }
@@ -389,6 +406,15 @@ DEFINE_SYSCALL(capget, cap_user_header_t, header_ptr, cap_user_data_t, data_ptr)
 DEFINE_SYSCALL(capset, cap_user_header_t, header_ptr, const cap_user_data_t, data_ptr)
 {
  warnk("capset is stubbed but not implemented\n");
+
+ int i = 0;
+
+ for (i=0; i < 2; i++)
+ {
+     printk("capset::%d.eff:%08x\n", i, data_ptr[i].effective);
+     printk("capset::%d.prm:%08x\n", i, data_ptr[i].permitted);
+     printk("capset::%d.inh:%08x\n", i, data_ptr[i].inheritable);
+ }
 
   return 0;
 }
